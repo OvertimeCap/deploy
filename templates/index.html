@@ -1,0 +1,10 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-5">
+    <h1 class="mb-4">{{ title }}</h1>
+    <p>Bem-vindo ao Sistema Interno da Overtime, {{ current_user.email }}!</p>
+    <p>Utilize o menu acima para navegar pelas funcionalidades.</p>
+</div>
+{% endblock %}
+
