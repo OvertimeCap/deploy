@@ -1,2 +1,0 @@
-# Initializes the routes package
-
