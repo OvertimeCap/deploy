@@ -190,7 +190,7 @@ def gerar_contrato(cliente_id):
             directory=os.path.dirname(contrato_bytes), # Gunicorn precisa de um dir
             path=os.path.basename(contrato_bytes),
             as_attachment=True,
-            download_name=f"Contrato_{cliente.cliente_nome.replace(" ", "_")}_{cliente.cpf}.docx"
+           download_name=f"Contrato_{cliente.cliente_nome.replace(' ', '_')}_{cliente.cpf}.docx"
         )
     except Exception as e:
         flash(f"Erro ao gerar contrato: {e}", "danger")
