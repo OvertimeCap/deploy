@@ -1,6 +1,7 @@
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager
+from flask_bootstrap import Bootstrap
 import os
 
 # Initialize extensions
@@ -8,6 +9,7 @@ db = SQLAlchemy()
 login_manager = LoginManager()
 login_manager.login_view = 'auth.login' # The route for the login page
 login_manager.login_message_category = 'info'
+bootstrap = Bootstrap()
 
 def create_app():
     app = Flask(__name__, template_folder='../templates', static_folder='../static')
@@ -27,9 +29,19 @@ def create_app():
     # Initialize extensions with app
     db.init_app(app)
     login_manager.init_app(app)
+    bootstrap.init_app(app)
+    
     with app.app_context():
-    db.drop_all() 
-    db.create_all()
+        db.drop_all() 
+        db.create_all()
+        
+        # Definir valores padrão para status_tarefa em registros existentes
+        from .models.cliente_potencial import ClientePotencial
+        clientes = ClientePotencial.query.all()
+        for cliente in clientes:
+            if not hasattr(cliente, 'status_tarefa') or cliente.status_tarefa is None:
+                cliente.status_tarefa = "pendente"
+        db.session.commit()
 
     # User loader function for Flask-Login
     from .models.user import User
@@ -45,8 +57,6 @@ def create_app():
     app.register_blueprint(main_bp)
 
     with app.app_context():
-        db.create_all() # Create tables if they don't exist
-        
         # Create admin user only if a specific flag is not set (to avoid issues on Render)
         # Or handle this via a one-time setup script or Render's build commands if needed.
         # For simplicity, let's assume this runs once or is idempotent.
@@ -63,4 +73,3 @@ def create_app():
                 # Potentially set the ADMIN_USER_CREATED flag in a real scenario or manage via migrations
 
     return app
-
