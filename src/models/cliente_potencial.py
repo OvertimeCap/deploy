@@ -43,3 +43,4 @@ class ClientePotencial(db.Model):
     def __repr__(self):
         return f"<ClientePotencial {self.nome_cliente}>"
 
+status_tarefa = db.Column(db.String(20), default="pendente")
