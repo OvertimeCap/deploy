@@ -21,7 +21,7 @@ def create_app():
     if database_url and database_url.startswith("postgres://"):
         database_url = database_url.replace("postgres://", "postgresql://", 1)
     
-    app.config['SQLALCHEMY_DATABASE_URI'] = database_url or 'sqlite:///./overtime_dev.db' # Fallback to SQLite for local dev if DATABASE_URL not set
+    app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///overtime.db'
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
     # Initialize extensions with app
