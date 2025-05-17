@@ -26,6 +26,9 @@ def create_app():
 
     # Initialize extensions with app
     db.init_app(app)
+    with app.app_context():
+    db.drop_all() 
+    db.create_all()
     login_manager.init_app(app)
 
     # User loader function for Flask-Login
