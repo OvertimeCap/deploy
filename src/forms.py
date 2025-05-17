@@ -34,6 +34,16 @@ class ClientePotencialForm(FlaskForm):
     observacoes = TextAreaField("Observações", validators=[Optional()])
     data_primeiro_contato = DateField("Data do Primeiro Contato", format="%Y-%m-%d", validators=[Optional()])
     # responsavel_id will be set automatically based on current_user
+    
+    # Adicionando o campo status_tarefa que estava faltando
+    status_tarefa = SelectField("Status da Tarefa", 
+                              choices=[
+                                  ("pendente", "Pendente"), 
+                                  ("em andamento", "Em Andamento"), 
+                                  ("concluído", "Concluído")
+                              ], 
+                              default="pendente",
+                              validators=[DataRequired()])
 
     submit = SubmitField("Salvar Cliente Potencial")
 
