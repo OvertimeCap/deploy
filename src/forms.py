@@ -1,6 +1,11 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, TextAreaField, FloatField, DateField, SelectField, SubmitField
+from wtforms import StringField, TextAreaField, FloatField, DateField, SelectField, SubmitField, PasswordField
 from wtforms.validators import DataRequired, Optional, Email, Length, Regexp
+
+class LoginForm(FlaskForm):
+    email = StringField("Email", validators=[DataRequired(), Email()])
+    password = PasswordField("Senha", validators=[DataRequired()])
+    submit = SubmitField("Login")
 
 class ClientePotencialForm(FlaskForm):
     nome_cliente = StringField("Nome do Cliente", validators=[DataRequired(), Length(max=200)])
@@ -68,6 +73,14 @@ class ClienteFinalizadoForm(FlaskForm):
     tributacao = StringField("Tributação", validators=[Optional(), Length(max=100)])
     banco_cliente = StringField("Banco do Cliente", validators=[Optional(), Length(max=100)])
     observacao = TextAreaField("Observação", validators=[Optional()])
+    status_tarefa = SelectField("Status da Tarefa", 
+                              choices=[
+                                  ("pendente", "Pendente"), 
+                                  ("em andamento", "Em Andamento"), 
+                                  ("concluído", "Concluído")
+                              ], 
+                              default="pendente",
+                              validators=[DataRequired()])
 
     # Campos de Upload de Arquivos
     # Definir extensões permitidas depois (ex: ["pdf", "jpg", "png", "jpeg", "docx"])
@@ -89,4 +102,3 @@ class ClienteFinalizadoForm(FlaskForm):
     ])
 
     submit = SubmitField("Salvar Cliente Finalizado e Gerar Contrato")
-
