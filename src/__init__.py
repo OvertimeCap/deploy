@@ -16,7 +16,8 @@ def create_app():
     
     # Configuration
     app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'dev_secret_key')
-    app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///overtime.db'
+    # Caminho absoluto para o banco de dados SQLite
+    app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + os.path.join(os.path.abspath(os.path.dirname(__file__)), '..', 'overtime.db')
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
     
     # Initialize extensions with app
@@ -24,11 +25,16 @@ def create_app():
     login_manager.init_app(app)
     bootstrap.init_app(app)
     
+    # Importe todos os modelos explicitamente antes de criar as tabelas
+    from .models.user import User
+    from .models.cliente_potencial import ClientePotencial
+    from .models.cliente_finalizado import ClienteFinalizado
+    
     with app.app_context():
+        db.drop_all()  # Mantenha esta linha apenas para o primeiro deploy
         db.create_all()
         
         # Definir valores padrão para status_tarefa em registros existentes
-        from .models.cliente_potencial import ClientePotencial
         clientes = ClientePotencial.query.all()
         for cliente in clientes:
             if not hasattr(cliente, 'status_tarefa') or cliente.status_tarefa is None:
@@ -36,7 +42,6 @@ def create_app():
         db.session.commit()
     
     # User loader function for Flask-Login
-    from .models.user import User
     @login_manager.user_loader
     def load_user(user_id):
         return User.query.get(int(user_id))
