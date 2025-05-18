@@ -25,7 +25,6 @@ def create_app():
     bootstrap.init_app(app)
     
     with app.app_context():
-        db.drop_all()
         db.create_all()
         
         # Definir valores padrão para status_tarefa em registros existentes
