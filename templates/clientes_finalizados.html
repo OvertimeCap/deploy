@@ -1,0 +1,66 @@
+{% extends "base.html" %}
+{% import "bootstrap/wtf.html" as wtf %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2>Clientes Finalizados</h2>
+    <form method="POST" enctype="multipart/form-data">
+        {{ form.hidden_tag() }}
+        <div class="row">
+            <div class="col-md-6">
+                {{ wtf.form_field(form.cliente_nome) }}
+                {{ wtf.form_field(form.cpf) }}
+                {{ wtf.form_field(form.numero_processo) }}
+                {{ wtf.form_field(form.vara) }}
+                {{ wtf.form_field(form.precatorio) }}
+                {{ wtf.form_field(form.n_cnj) }}
+                {{ wtf.form_field(form.of_requisitorio) }}
+                {{ wtf.form_field(form.percentual_cessao) }}
+                {{ wtf.form_field(form.ano_previsto_pagamento) }}
+                {{ wtf.form_field(form.preco_aquisicao) }}
+                {{ wtf.form_field(form.data_calculo) }}
+                {{ wtf.form_field(form.data_compra) }}
+                {{ wtf.form_field(form.local_compra) }}
+                {{ wtf.form_field(form.data_pagamento_cliente) }}
+                {{ wtf.form_field(form.valor_inscrito_requisitado) }}
+                {{ wtf.form_field(form.observacao) }}
+                {{ wtf.form_field(form.status_tarefa) }}
+            </div>
+            <div class="col-md-6">
+                {{ wtf.form_field(form.documento_rg_cnh) }}
+                {{ wtf.form_field(form.comprovante_endereco) }}
+                {{ wtf.form_field(form.comprovante_pagamento) }}
+                {{ wtf.form_field(form.documento_adicional) }}
+            </div>
+        </div>
+        <div class="text-end mt-3">
+            {{ wtf.form_field(form.submit) }}
+        </div>
+    </form>
+
+    <hr>
+    <h3>Lista de Clientes Finalizados</h3>
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Nome</th>
+                <th>CPF</th>
+                <th>Processo</th>
+                <th>Data da Compra</th>
+                <th>Status</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for cliente in clientes %}
+            <tr>
+                <td>{{ cliente.cliente_nome }}</td>
+                <td>{{ cliente.cpf }}</td>
+                <td>{{ cliente.numero_processo }}</td>
+                <td>{{ cliente.data_compra.strftime("%d/%m/%Y") if cliente.data_compra else '' }}</td>
+                <td>{{ cliente.status_tarefa }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}
