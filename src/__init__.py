@@ -34,6 +34,17 @@ def create_app():
         db.drop_all()  # Mantenha esta linha apenas para o primeiro deploy
         db.create_all()
         
+        # Criar usuário admin
+        admin_email = "overtimecap@gmail.com"
+        admin_password = os.environ.get("ADMIN_PASSWORD", "admin_password")
+        admin_user = User.query.filter_by(email=admin_email).first()
+        if not admin_user:
+            admin_user = User(email=admin_email, is_admin=True)
+            admin_user.set_password(admin_password)
+            db.session.add(admin_user)
+            db.session.commit()
+            print(f"Admin user {admin_email} created successfully.")
+        
         # Definir valores padrão para status_tarefa em registros existentes
         clientes = ClientePotencial.query.all()
         for cliente in clientes:
