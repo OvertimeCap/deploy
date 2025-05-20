@@ -1,0 +1,98 @@
+{% extends "base.html" %}
+{% import "bootstrap/wtf.html" as wtf %}
+
+{% block content %}
+<div class="container mt-4">
+    <h1 class="mb-4">{{ title }}</h1>
+
+    <form method="GET" action="{{ url_for(\'main.painel_tarefas\') }}" class="mb-4 p-3 border rounded bg-light">
+        <div class="row g-3 align-items-end">
+            {% if current_user.is_admin %}
+            <div class="col-md-4">
+                <label for="filter_responsavel_id" class="form-label">Filtrar por Responsável</label>
+                <select name="responsavel_id" id="filter_responsavel_id" class="form-select">
+                    <option value="all" {% if filter_responsavel_id == \'all\'%}selected{% endif %}>Todos os Responsáveis</option>
+                    {% for resp in responsaveis %}
+                    <option value="{{ resp.id }}" {% if filter_responsavel_id == resp.id|string %}selected{% endif %}>{{ resp.email }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            {% endif %}
+            <div class="col-md-4">
+                <label for="filter_status_tarefa" class="form-label">Filtrar por Status da Tarefa</label>
+                <select name="status_tarefa" id="filter_status_tarefa" class="form-select">
+                    <option value="all" {% if filter_status_tarefa == \'all\'%}selected{% endif %}>Todos os Status</option>
+                    {% for status in status_options %}
+                    <option value="{{ status }}" {% if filter_status_tarefa == status %}selected{% endif %}>{{ status|capitalize }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-md-2">
+                <button type="submit" class="btn btn-primary w-100">Filtrar</button>
+            </div>
+        </div>
+    </form>
+
+    {% if tarefas %}
+    <div class="table-responsive">
+        <table class="table table-striped table-hover">
+            <thead>
+                <tr>
+                    <th>Cliente</th>
+                    <th>CPF</th>
+                    <th>Responsável</th>
+                    <th>Status Atual</th>
+                    <th>Observações</th>
+                    <th>Ações</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for tarefa in tarefas %}
+                <tr>
+                    <td>{{ tarefa.cliente_nome }}</td>
+                    <td>{{ tarefa.cpf }}</td>
+                    <td>{{ tarefa.responsavel.email }}</td>
+                    <td>
+                        <form method="POST" action="{{ url_for(\'main.atualizar_tarefa\', tarefa_id=tarefa.id, filter_responsavel_id=request.args.get(\'responsavel_id\', \'all\'), filter_status_tarefa=request.args.get(\'status_tarefa\', \'all\')) }}" class="d-inline-block me-1">
+                            <select name="status_tarefa" class="form-select form-select-sm" onchange="this.form.submit()">
+                                {% for status in status_options %}
+                                <option value="{{ status }}" {% if tarefa.status_tarefa == status %}selected{% endif %}>{{ status|capitalize }}</option>
+                                {% endfor %}
+                            </select>
+                        </form>
+                    </td>
+                    <td>
+                        <form method="POST" action="{{ url_for(\'main.atualizar_tarefa\', tarefa_id=tarefa.id, filter_responsavel_id=request.args.get(\'responsavel_id\', \'all\'), filter_status_tarefa=request.args.get(\'status_tarefa\', \'all\')) }}">
+                            <div class="input-group">
+                                <input type="text" name="observacao_painel" class="form-control form-control-sm" value="{{ tarefa.observacao_painel if tarefa.observacao_painel is not none else \'\\' }}" placeholder="Adicionar observação...">
+                                <button type="submit" class="btn btn-outline-secondary btn-sm">Salvar</button>
+                            </div>
+                            {% if current_user.is_admin %}
+                            <div class="mt-1">
+                                <label for="responsavel_id_{{tarefa.id}}" class="form-label form-label-sm">Mudar Responsável:</label>
+                                <select name="responsavel_id" id="responsavel_id_{{tarefa.id}}" class="form-select form-select-sm" onchange="this.form.submit()">
+                                    {% for resp in responsaveis %}
+                                    <option value="{{ resp.id }}" {% if tarefa.responsavel_id == resp.id %}selected{% endif %}>{{ resp.email }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            {% endif %}
+                        </form>
+                    </td>
+                    <td>
+                        <a href="#" class="btn btn-sm btn-info disabled" title="Gerar Contrato (em breve)">Gerar Contrato</a>
+                        {# <a href="{{ url_for(\'main.gerar_contrato\', cliente_id=tarefa.id) }}" class="btn btn-sm btn-info">Gerar Contrato</a> #}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% else %}
+    <div class="alert alert-info" role="alert">
+        Nenhuma tarefa encontrada com os filtros selecionados.
+    </div>
+    {% endif %}
+</div>
+{% endblock %}
+
